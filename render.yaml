@@ -17,7 +17,7 @@ services:
       - key: SPRING_JPA_DATABASE_PLATFORM
         value: org.hibernate.dialect.H2Dialect
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:h2:mem:testdb
+        value: jdbc:h2:file:/tmp/sciencehub
       - key: SPRING_DATASOURCE_DRIVERCLASSNAME
         value: org.h2.Driver
       - key: SPRING_H2_CONSOLE_ENABLED

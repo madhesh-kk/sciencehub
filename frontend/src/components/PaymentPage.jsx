@@ -12,36 +12,43 @@ export default function PaymentPage({ address, amount, onSuccess }) {
       return;
     }
 
+    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY;
+    console.log("Using Razorpay Key:", razorpayKey ? razorpayKey.substring(0, 10) + "..." : "NOT SET");
+
     const options = {
-      key: import.meta.env.VITE_RAZORPAY_KEY || "rzp_test_RbK6PeigFfj3iJ",
+      key: razorpayKey || "rzp_test_RbK6PeigFfj3iJ",
       amount: Math.round(amount * 100), // Convert Rs to paise, rounded
       currency: "INR",
       name: "ScienceHub",
       description: "Order Payment",
       handler: function (response) {
+        console.log("Razorpay Response:", response);
         // Only call the success callback - do NOT save here
         if (onSuccess) onSuccess(response);
       },
       prefill: {
-        name: address.name,
-        contact: address.phone,
+        name: address.name || "Customer",
+        contact: address.phone || "",
+        email: address.email || "",
       },
       theme: {
-        color: "#1976d2",
+        color: "#d97757",
       },
       modal: {
         ondismiss: function () {
+          console.log("Payment modal closed by user");
           alert("Payment popup closed.");
         },
       },
     };
 
     try {
+      console.log("Initializing Razorpay with options:", { ...options, key: "***" });
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
+      console.error("Razorpay Error:", err);
       alert("Error initiating payment: " + err.message);
-      console.error(err);
     }
   };
 
