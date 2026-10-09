@@ -10,22 +10,18 @@ services:
     envVars:
       - key: PORT
         value: 8080
-      - key: SPRING_DATASOURCE_URL
-        fromDatabase:
-          name: sciencehub-db
-          property: connectionString
-      - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: sciencehub-db
-          property: user
-      - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: sciencehub-db
-          property: password
       - key: SPRING_PROFILES_ACTIVE
         value: prod
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: update
+        value: create-drop
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.H2Dialect
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:h2:mem:testdb
+      - key: SPRING_DATASOURCE_DRIVERCLASSNAME
+        value: org.h2.Driver
+      - key: SPRING_H2_CONSOLE_ENABLED
+        value: "true"
       - key: CORS_ALLOWED_ORIGINS
         value: https://sciencehub-three.vercel.app
       - key: RAZORPAY_KEY_ID
@@ -33,9 +29,4 @@ services:
       - key: RAZORPAY_SECRET_KEY
         value: ${RAZORPAY_SECRET_KEY}
 
-databases:
-  - name: sciencehub-db
-    engine: mysql
-    version: 8
-    plan: free
 
