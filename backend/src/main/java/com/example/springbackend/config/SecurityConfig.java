@@ -13,11 +13,12 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-    "/api/auth/register",
-    "/api/auth/login",
-    "/api/orders"
-).permitAll()
-                .anyRequest().authenticated()
+                    "/api/auth/register",
+                    "/api/auth/login",
+                    "/api/orders",
+                    "/api/actuator/**"
+                ).permitAll()
+                .anyRequest().permitAll()  // Allow all requests for now (development)
             )
             .cors(cors -> cors
                 .configurationSource(request -> {
