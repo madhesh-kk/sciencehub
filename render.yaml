@@ -17,17 +17,15 @@ services:
       - key: SPRING_JPA_DATABASE_PLATFORM
         value: org.hibernate.dialect.H2Dialect
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+        value: jdbc:h2:file:/tmp/sciencehub;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
       - key: SPRING_DATASOURCE_DRIVERCLASSNAME
-        value: com.mysql.cj.jdbc.Driver
-      - key: SPRING_DATASOURCE_USERNAME
-        value: ${MYSQL_USERNAME}
-      - key: SPRING_DATASOURCE_PASSWORD
-        value: ${MYSQL_PASSWORD}
-      - key: SPRING_JPA_DATABASE_PLATFORM
-        value: org.hibernate.dialect.MySQL8Dialect
+        value: org.h2.Driver
+      - key: SPRING_H2_CONSOLE_ENABLED
+        value: "true"
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
         value: update
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.H2Dialect
       - key: CORS_ALLOWED_ORIGINS
         value: https://sciencehub-three.vercel.app,http://localhost:5173,http://localhost:3000
       - key: RAZORPAY_KEY_ID
