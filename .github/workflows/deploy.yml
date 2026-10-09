@@ -110,7 +110,7 @@ jobs:
               body: '✅ Frontend preview deployed to Vercel'
             })
 
-  # Deploy to Heroku (Backend)
+  # Deploy to Render (Backend)
   deploy-backend:
     needs: build-backend
     runs-on: ubuntu-latest
@@ -118,21 +118,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       
-      - name: Deploy to Heroku
-        uses: AkhileshNS/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email: ${{ secrets.HEROKU_EMAIL }}
-          buildpack: heroku/jvm
-          appdir: backend
-          delay: 30
-          healthcheck: "https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/actuator/health"
-          healthcheck_delay: 5
-          healthcheck_attempts: 5
+      - name: Deploy to Render
+        run: |
+          curl -X POST \
+            https://api.render.com/deploy/srv/${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
 
   # Docker Build & Push (Optional)
   build-docker:
