@@ -23,7 +23,7 @@ services:
       - key: SPRING_H2_CONSOLE_ENABLED
         value: "true"
       - key: CORS_ALLOWED_ORIGINS
-        value: https://sciencehub-three.vercel.app
+        value: https://sciencehub-three.vercel.app,http://localhost:5173,http://localhost:3000
       - key: RAZORPAY_KEY_ID
         value: ${RAZORPAY_KEY_ID}
       - key: RAZORPAY_SECRET_KEY
