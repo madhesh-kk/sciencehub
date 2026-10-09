@@ -1,0 +1,354 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global reset and overflow prevention */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #F5EFE7; /* sand-50 */
+  min-height: 100%;
+}
+
+body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: #F5EFE7; /* sand-50 */
+  min-height: 100%;
+  @apply text-gray-800;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #F5EFE7; /* sand-50 */
+  overflow-x: hidden;
+}
+
+/* Prevent images from causing overflow */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Prevent flex and grid children from overflowing */
+.flex > *,
+.grid > * {
+  min-width: 0;
+}
+
+/* Ensure inputs don't overflow */
+input,
+textarea,
+select,
+button {
+  max-width: 100%;
+}
+
+/* Text wrapping for long strings */
+.break-anywhere {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* MOBILE DESIGN TOKENS - Shared across all pages (320px-639px) */
+:root {
+  /* TYPE SCALE - Mobile First */
+  --text-h1: 1.5625rem;     /* 25px */
+  --text-h1-lh: 1.4;
+  --text-h2: 1.125rem;      /* 18px */
+  --text-h2-lh: 1.5;
+  --text-h3: 1rem;          /* 16px */
+  --text-h3-lh: 1.5;
+  --text-body: 0.875rem;    /* 14px */
+  --text-body-lh: 1.55;
+  --text-sm: 0.8125rem;     /* 13px */
+  --text-sm-lh: 1.5;
+  --text-xs: 0.75rem;       /* 12px */
+  --text-xs-lh: 1.4;
+  
+  /* SPACING SCALE - 8px base unit */
+  --spacing-xs: 0.25rem;    /* 4px */
+  --spacing-sm: 0.5rem;     /* 8px */
+  --spacing-md: 0.75rem;    /* 12px */
+  --spacing-base: 1rem;     /* 16px */
+  --spacing-lg: 1.5rem;     /* 24px */
+  
+  /* RADIUS */
+  --radius-sm: 0.75rem;     /* 12px for inputs, buttons */
+  --radius-md: 0.875rem;    /* 14px for cards */
+  --radius-lg: 1rem;        /* 16px for larger cards */
+  
+  /* CONTROLS - Mobile optimized */
+  --control-height: 2.75rem; /* 44px minimum tap target */
+  --control-height-lg: 3rem; /* 48px for primary actions */
+  --button-text-size: 0.9375rem; /* 15px semibold */
+  --button-text-lh: 1.4;
+  
+  /* PAGE PADDING */
+  --page-px: 1rem;          /* 16px sides */
+  
+  /* GAP BETWEEN SECTIONS */
+  --section-gap: 1.5rem;    /* 24px */
+  --section-gap-sm: 1rem;   /* 16px */
+  
+  /* SHADOWS - Very light */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Tablet & Desktop type scale (640px+) */
+@media (min-width: 640px) {
+  :root {
+    --text-h1: 3rem;         /* 48px */
+    --text-h1-lh: 1.1;
+    --text-h2: 2.25rem;      /* 36px */
+    --text-h2-lh: 1.2;
+    --text-h3: 1.5rem;       /* 24px */
+    --text-h3-lh: 1.3;
+    --text-body: 1.125rem;   /* 18px */
+    --text-body-lh: 1.7;
+  }
+}
+
+body {
+  @apply bg-gray-50 text-gray-800;
+}
+
+.container {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lab-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  background-image:
+    radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.22), transparent 14%),
+    radial-gradient(circle at 85% 18%, rgba(255, 255, 255, 0.18), transparent 18%),
+    radial-gradient(circle at 50% 75%, rgba(255, 255, 255, 0.14), transparent 20%);
+}
+
+.lab-icon {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.7);
+  filter: blur(0.4px);
+  opacity: 0.24;
+  transform-origin: center;
+  animation: float-vertical 16s ease-in-out infinite,
+    sway 22s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.lab-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.lab-icon.beaker {
+  top: 8%;
+  left: 6%;
+  width: 140px;
+  height: 140px;
+  animation-duration: 18s;
+}
+
+.lab-icon.testtube {
+  top: 18%;
+  right: 8%;
+  width: 110px;
+  height: 110px;
+  animation-duration: 14s;
+  animation-delay: 2s;
+}
+
+.lab-icon.atom {
+  bottom: 14%;
+  left: 10%;
+  width: 160px;
+  height: 160px;
+  animation-duration: 20s;
+  animation-delay: 4s;
+}
+
+.lab-icon.flask {
+  bottom: 16%;
+  right: 10%;
+  width: 130px;
+  height: 130px;
+  animation-duration: 17s;
+  animation-delay: 1s;
+}
+
+@keyframes float-vertical {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-18px) scale(1.03);
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(12px);
+  }
+}
+
+/* Safe area for phones with gesture bars */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Global responsive container and layout fixes */
+@media (max-width: 639px) {
+  /* Remove any forced widths that could cause horizontal scroll */
+  * {
+    max-width: 100%;
+  }
+  
+  /* Ensure flex and grid children don't overflow */
+  .flex > *,
+  .grid > * {
+    min-width: 0;
+  }
+  
+  /* Mobile card styling - no large padding, direct on background */
+  main {
+    width: 100%;
+    padding: 0;
+  }
+  
+  /* Prevent sticky bars from covering content */
+  .mobile-sticky-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+/* Responsive Typography Utilities */
+.text-responsive-h1 {
+  font-size: var(--text-h1);
+  line-height: var(--text-h1-lh);
+}
+
+.text-responsive-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--text-h2-lh);
+}
+
+.text-responsive-h3 {
+  font-size: var(--text-h3);
+  line-height: var(--text-h3-lh);
+}
+
+.text-responsive-body {
+  font-size: var(--text-body);
+  line-height: var(--text-body-lh);
+}
+
+/* Mobile Utility Classes */
+.page-px {
+  padding-left: var(--page-px);
+  padding-right: var(--page-px);
+}
+
+.section-gap {
+  gap: var(--section-gap);
+}
+
+.section-gap-sm {
+  gap: var(--section-gap-sm);
+}
+
+/* Input and Button Utilities */
+.mobile-input {
+  height: var(--control-height);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 1rem; /* 16px on iOS to prevent zoom-on-focus */
+  font-family: inherit;
+}
+
+.mobile-input::placeholder {
+  font-size: var(--text-body);
+  opacity: 0.7;
+}
+
+.mobile-button {
+  height: var(--control-height);
+  padding: 0 1.5rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--button-text-size);
+  font-weight: 600;
+  line-height: var(--button-text-lh);
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 200ms ease;
+}
+
+.mobile-button-lg {
+  height: var(--control-height-lg);
+}
+
+/* Mobile Card with minimal styling */
+.mobile-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Sticky bottom bar for mobile */
+.mobile-sticky-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 1rem var(--page-px) calc(1rem + env(safe-area-inset-bottom));
+  z-index: 40;
+}
+
+/* Text truncation for long strings */
+.text-truncate-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Text overflow handling */
+.overflow-wrap-anywhere {
+  overflow-wrap: anywhere;
+}
+
+.break-anywhere {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}

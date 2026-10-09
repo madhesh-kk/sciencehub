@@ -1,0 +1,197 @@
+name: Build & Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Frontend Build & Test
+  build-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run linter
+        run: npm run lint --if-present || true
+      
+      - name: Build frontend
+        run: npm run build
+      
+      - name: Upload frontend artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: frontend/dist
+          retention-days: 1
+
+  # Backend Build & Test
+  build-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    
+    strategy:
+      matrix:
+        java-version: ['17']
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+          cache: maven
+      
+      - name: Build with Maven
+        run: mvn clean verify
+      
+      - name: Run tests
+        run: mvn test
+      
+      - name: Upload backend artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: backend/target/*.jar
+          retention-days: 1
+
+  # Deploy to Vercel (Frontend)
+  deploy-frontend:
+    needs: build-frontend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: frontend
+          production: true
+      
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '✅ Frontend preview deployed to Vercel'
+            })
+
+  # Deploy to Heroku (Backend)
+  deploy-backend:
+    needs: build-backend
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - name: Deploy to Heroku
+        uses: AkhileshNS/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email: ${{ secrets.HEROKU_EMAIL }}
+          buildpack: heroku/jvm
+          appdir: backend
+          delay: 30
+          healthcheck: "https://${{ secrets.HEROKU_APP_NAME }}.herokuapp.com/api/actuator/health"
+          healthcheck_delay: 5
+          healthcheck_attempts: 5
+
+  # Docker Build & Push (Optional)
+  build-docker:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/sciencehub-frontend:latest,${{ secrets.DOCKER_USERNAME }}/sciencehub-frontend:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/sciencehub-frontend:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/sciencehub-frontend:buildcache,mode=max
+      
+      - name: Build and push backend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: backend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/sciencehub-backend:latest,${{ secrets.DOCKER_USERNAME }}/sciencehub-backend:${{ github.sha }}
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/sciencehub-backend:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/sciencehub-backend:buildcache,mode=max
+
+  # Notify Slack
+  notify:
+    needs: [deploy-frontend, deploy-backend]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
+          payload: |
+            {
+              "text": "ScienceHub Deployment Status",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🚀 *Deployment Status*\n*Frontend:* ${{ needs.deploy-frontend.result }}\n*Backend:* ${{ needs.deploy-backend.result }}"
+                  }
+                }
+              ]
+            }
