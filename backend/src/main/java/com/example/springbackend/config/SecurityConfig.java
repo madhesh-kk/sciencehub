@@ -13,10 +13,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/api/auth/register",
-                    "/api/auth/login",
-                    "/api/orders",
-                    "/api/actuator/**"
+                    "/auth/register",
+                    "/auth/login",
+                    "/orders",
+                    "/actuator/**"
                 ).permitAll()
                 .anyRequest().permitAll()  // Allow all requests for now (development)
             )

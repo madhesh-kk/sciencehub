@@ -12,7 +12,7 @@ import com.example.springbackend.model.User;
 import com.example.springbackend.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
     @Autowired
     private UserRepository userRepository;
