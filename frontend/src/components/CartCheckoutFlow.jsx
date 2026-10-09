@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import AddressForm from "./AddressForm";
 import PaymentPage from "./PaymentPage";
+import { apiConfig } from "../config/api";
 
 export default function CartCheckoutFlow({ user, cart, amount, onPaymentSuccess, onRequireLogin }) {
   const [step, setStep] = useState(1);
@@ -52,7 +53,7 @@ export default function CartCheckoutFlow({ user, cart, amount, onPaymentSuccess,
         cart,
       };
 
-      const res = await fetch("http://localhost:8085/api/orders", {
+      const res = await fetch(apiConfig.endpoints.orders, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
